@@ -1,11 +1,16 @@
 package com.conversor.conversor_medieval.conversion;
 
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.transaction.annotation.Transactional;
 
-import javax.validation.Valid;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.text.NumberFormat;
+import java.text.SimpleDateFormat;
 import java.util.List;
+import java.util.Locale;
 import java.util.stream.Collectors;
 
 @Service
@@ -14,7 +19,8 @@ public class ConversionService {
     @Autowired
     private ConversionRepository conversionRepository;
 
-    public ConversionResponseDTO createConversion(@RequestBody @Valid ConversionRequestDTO request) {
+    @Transactional
+    public ConversionResponseDTO createConversion(ConversionRequestDTO request) {
 
         ConversionModel conversion = new ConversionModel();
         conversion.setFromCoin(request.fromCoin());
@@ -32,19 +38,29 @@ public class ConversionService {
         );
     }
 
-    public List<ConversionResponseDTO> getLatestConversions(){
+    public List<String> getLatestConversions() {
+        List<ConversionModel> conversions = conversionRepository.findLatestConversionsByCoinPair();
 
-        List<ConversionModel> conversionModels = conversionRepository.findLatestConversionsByCoinPair();
-
-
-        return conversionModels.stream()
-                .map(c -> new ConversionResponseDTO(
-                        c.getId(),
-                        c.getFromCoin(),
-                        c.getToCoin(),
-                        c.getCurrencyValue(),
-                        c.getLastUpdatedDate()
-                ))
+        return conversions.stream()
+                .map(this::formatConversionMessage)
                 .collect(Collectors.toList());
+    }
+
+    private String formatConversionMessage(ConversionModel conversion) {
+        BigDecimal directRate = conversion.getCurrencyValue();
+        BigDecimal inverseRate = BigDecimal.ONE.divide(directRate, 4, RoundingMode.HALF_UP);
+
+        NumberFormat rateFormat = NumberFormat.getInstance(new Locale("pt", "BR"));
+        rateFormat.setMaximumFractionDigits(4);
+
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM HH:mm");
+
+        return String.format(
+                "💎 1 %s = %s %s (📅 %s)",
+                conversion.getFromCoin(),
+                rateFormat.format(directRate),
+                conversion.getToCoin(),
+                dateFormat.format(conversion.getLastUpdatedDate())
+        );
     }
 }

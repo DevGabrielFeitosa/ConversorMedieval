@@ -10,5 +10,5 @@ public record ProductResponseDTO(Long id,
                                  String originKingdom,
                                  Coin originCoin,
                                  BigDecimal specificConversion,
-                                 BigDecimal value
+                                 BigDecimal unitaryValue
 ) {}

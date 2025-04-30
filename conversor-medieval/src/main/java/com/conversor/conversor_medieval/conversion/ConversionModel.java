@@ -2,12 +2,13 @@ package com.conversor.conversor_medieval.conversion;
 
 import com.conversor.conversor_medieval.coin.Coin;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.AssertTrue;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 
-import javax.validation.constraints.AssertTrue;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Positive;
+
 import java.math.BigDecimal;
 import java.util.Date;
 

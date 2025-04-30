@@ -1,10 +1,10 @@
 package com.conversor.conversor_medieval.products;
 
 import com.conversor.conversor_medieval.coin.Coin;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Positive;
 import java.math.BigDecimal;
 
 public record ProductRequestDTO(
@@ -21,10 +21,9 @@ public record ProductRequestDTO(
         Coin originCoin,
 
         @Positive(message = "A conversão específica deve ser positiva")
-        @NotNull(message = "A conversão específica é obrigatória")
         BigDecimal specificConversion,
 
         @Positive(message = "O valor do produto deve ser positivo")
         @NotNull(message = "O valor do produto é obrigatório")
-        BigDecimal value
+        BigDecimal unitaryValue
 ) {}
